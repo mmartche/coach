@@ -4,12 +4,12 @@
 * 
 */
 class ModelAtivocoachAtivocoach extends Model {
-	public function getPermission($my_id){
-		$query = $this->db->query("SELECT COUNT(DISTINCT c.permission_id) as total FROM " . DB_PREFIX . "ativocoach_permission c WHERE c.coach_id = '".$my_id."'");
+	public function getPermission($data = array()){
+		$query = $this->db->query("SELECT COUNT(DISTINCT c.ativocoach_id) as id FROM " . DB_PREFIX . "ativocoach c WHERE c.coach_id = '".$data['my_id']."' and c.student_id = '".$data['sid']."'");
 		if ($query->num_rows) {
-			return $query->row['total'];
+			return true;
 		} else {
-			return "";
+			return false;
 		}
 	}
 	public function getGroupName($data = array()){
@@ -21,7 +21,12 @@ class ModelAtivocoachAtivocoach extends Model {
 		}
 	}
 	public function getAtivocoachs($data = array()) {
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "ativocoach f left join " . DB_PREFIX ."customer c on (f.student_id = c.customer_id) WHERE f.status = '1' and f.coach_id = '".$data['my_id']."' ORDER BY f.date_added DESC LIMIT ".(int)$data['start'].",".(int)$data['limit']."");
+		if ($data['my_group'] == 3 && !empty($data['sid'])) {
+			$query = $this->db->query("SELECT b.*, c.* FROM " . DB_PREFIX . "ativocoach a left join " . DB_PREFIX ."ativocoach b on (a.student_id = b.coach_id) left join oc_customer c
+		on b.student_id = c.customer_id WHERE a.status = '1' and a.coach_id = '".$data['my_id']."' and a.student_id = '".$data['sid']."' ORDER BY a.date_added DESC LIMIT ".(int)$data['start'].",".(int)$data['limit']."");
+		} else {
+			$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "ativocoach f left join " . DB_PREFIX ."customer c on (f.student_id = c.customer_id) WHERE f.status = '1' and f.coach_id = '".$data['my_id']."' ORDER BY f.date_added DESC LIMIT ".(int)$data['start'].",".(int)$data['limit']."");
+		}
 		return $query->rows;
 	}
 	public function getAtivocoach($data = array()) {
@@ -38,6 +43,7 @@ class ModelAtivocoachAtivocoach extends Model {
 		return $query->row['total'];
 	}
 	public function inviteAtivocoach ($data = array()) {
+		//TO DO : check if is ass
 		if ($data['coach_id'] || $data['coach_id'] != 0) {
 			$query_student = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer where email = '".$data['student_email']."'");
 			if ($query_student->num_rows) {
@@ -50,12 +56,24 @@ class ModelAtivocoachAtivocoach extends Model {
 		}
 	}
 	public function disableInviteAtivocoach ($data = array()) {
-		if (!empty($data['ativocoach_id']) || !empty($data['coach_id']) || !empty($data['student_id'])) {
-			$query = $this->db->query("UPDATE " . DB_PREFIX . "ativocoach SET status='0' WHERE ativocoach_id='".$data['ativocoach_id']."' and coach_id = '".$data['coach_id']."' and student_id = '".$data['student_id']."'");
-			if ($this->db->countAffected() > 0){
-				return true;
+		if (!empty($data['ativocoach_id']) || !empty($data['my_id']) || !empty($data['student_id'])) {
+			if (($data['my_id'] != $data['coach_id']) && ($data['group_id'] == 3)) {
+				$query_check = $this->db->query("SELECT b.ativocoach_id as id FROM " . DB_PREFIX ."ativocoach a LEFT JOIN " . DB_PREFIX ."ativocoach b ON (a.student_id = b.coach_id) WHERE a.student_id = '".$data['coach_id']."' and a.coach_id = '".$data['my_id']."'");
+				if ($query_check->row['id'] == $data['ativocoach_id']) {
+					$query = $this->db->query("UPDATE " . DB_PREFIX . "ativocoach SET status='0' WHERE ativocoach_id='".$data['ativocoach_id']."' and coach_id = '".$data['my_id']."' and student_id = '".$data['student_id']."'");
+					if ($this->db->countAffected() > 0){
+						return true;
+					} else {
+						return false;
+					}
+				}
 			} else {
-				return false;
+				$query = $this->db->query("UPDATE " . DB_PREFIX . "ativocoach SET status='0' WHERE ativocoach_id='".$data['ativocoach_id']."' and coach_id = '".$data['my_id']."' and student_id = '".$data['student_id']."'");
+				if ($this->db->countAffected() > 0){
+					return true;
+				} else {
+					return false;
+				}
 			}
 		} else {
 			return false;
