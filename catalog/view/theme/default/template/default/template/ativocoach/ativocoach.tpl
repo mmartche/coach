@@ -32,6 +32,7 @@
 		<h2>Bem Vindo <?php echo $client_name; ?></h2>
 		<?php if ($groupId == 2 || $groupId == 3) { ?>
 		<form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-ativocoach" class="form-horizontal">
+			<input type="text" name="coach_id" value="<?php if(!empty($coach_id)) echo $coach_id; ?>" class="hide"  />
 			<label>Convide seus Alunos</label>
 			<input type="text" name="student_name" placeholder="Add Student Name" />
 			<input type="text" name="student_email" placeholder="Add Student E-mail" />

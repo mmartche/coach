@@ -19,3 +19,4 @@ $_['text_return']      = 'Returns';
 $_['text_transaction'] = 'Transactions';
 $_['text_newsletter']  = 'Newsletter';
 $_['text_recurring']   = 'Recurring payments';
+$_['text_ativocoach']	 = 'Coach';

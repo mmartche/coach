@@ -1,11 +1,17 @@
 <?php
 
+/*
+** to do
+qndo convida treinador, nao exibe os dados atualizados
+
+*/
+
 class ControllerAtivocoachAtivocoach extends Controller {
 	public function index()	{
 
 		if ($this->customer->getGroupId() != '3') {
 			if ($this->customer->getGroupId() != '2') {
-				$this->response->redirect($this->url->link('ativocoach/details','token=' . $this->session->data['token'].'&aid=0&sid='.$this->customer->getGroupId() . $url, 'SSL'));
+				$this->response->redirect($this->url->link('ativocoach/details','token=' . $this->session->data['token'].'&aid=0&sid='.$this->customer->getId() . $url, 'SSL'));
 			} else {
 				// $this->response->redirect($this->url->link('ativocoach/ativocoach','token=' . $this->session->data['token'], 'SSL'));
 			}
@@ -45,6 +51,7 @@ class ControllerAtivocoachAtivocoach extends Controller {
 			'my_group'	=> $this->customer->getGroupId(),
 			'sid'		=> (!empty($this->request->get['sid'])) ? $this->request->get['sid'] : ''
 			);
+		$sid_txt = (!empty($this->request->get['sid'])) ? $this->request->get['sid'] : $this->customer->getId();
 		$checkPermission = $this->model_ativocoach_ativocoach->getPermission($filter_data);
 		// if ($checkPermission) {
 			$ativocoach_total = $this->model_ativocoach_ativocoach->getTotalAtivocoachs($filter_data);
@@ -61,14 +68,16 @@ class ControllerAtivocoachAtivocoach extends Controller {
 				}
 				$data['ativocoachs'][] = array(
 					'ativocoach_id' 	=> $result['ativocoach_id'],
+					'my_id'				=> $this->customer->getId(),
 					'coach_id'			=> $result['coach_id'],
 					'student_id'		=> $result['student_id'],
 					'student_email'		=> (!empty($result['student_email'])) ? $result['student_email'] : strip_tags(html_entity_decode($result['email'], ENT_QUOTES, 'UTF-8')),
 					'student_name'		=> (!empty($result['student_name'])) ? $result['student_name'] : strip_tags(html_entity_decode($result['firstname'], ENT_QUOTES, 'UTF-8')),
 					'student_accepted'	=> $result['student_accepted'],
 					'url_details'		=> $url_details,
-					'url_disable'		=> $this->url->link('ativocoach/ativocoach/disableInvite', '&aid='.$result['ativocoach_id'].'&sid='.$result['student_id'].'&cid='.$result['coach_id'], 'SSL')
+					'url_disable'		=> $this->url->link('ativocoach/ativocoach/disableInvite', '&aid='.$result['ativocoach_id'].'&cid_txt='.$sid_txt.'&sid='.$result['student_id'].'&cid='.$result['coach_id'].'&token='.$this->session->data['token'], 'SSL')
 					);
+				$data['coach_id'] = $result['coach_id'];
 			}
 		// } 
 		$url = '';
@@ -122,6 +131,7 @@ class ControllerAtivocoachAtivocoach extends Controller {
 		} else {
 			$data['success'] = '';
 		}
+		if (empty($data['coach_id'])) $data['coach_id'] = $this->customer->getId();
 
 		if (file_exists(DIR_TEMPLATE. $this->config->get('config_template').'/template/ativocoach/ativocoach.tpl')) {
 			$this->response->setOutput($this->load->view($this->config->get('config_template').'/template/ativocoach/ativocoach.tpl', $data));
@@ -130,23 +140,28 @@ class ControllerAtivocoachAtivocoach extends Controller {
 		}
 	}
 		public function invite() {
+			//to do : send invite by email
 			$this->load->language('ativocoach/ativocoach');
 			$this->document->setTitle($this->language->get('heading_title'));
 			$this->load->model('ativocoach/ativocoach');
 			if (($this->request->server['REQUEST_METHOD'] == 'POST')) {
 				$filter_uid = array (
 					'coach_id'		=> $this->customer->getId(),
+					'cid_txt'		=> $this->request->post['coach_id'],
 					'student_name'	=> $this->request->post['student_name'],
 					'language_id'	=> (int)$this->config->get('config_language_id'),
 					'student_email'	=> $this->request->post['student_email']
 					);
-				$this->model_ativocoach_ativocoach->inviteAtivocoach($filter_uid);
-				$this->session->data['success'] = $this->language->get('text_invite_student_success');
+				if ($this->model_ativocoach_ativocoach->inviteAtivocoach($filter_uid)) {
+					$this->session->data['success'] = $this->language->get('text_invite_student_success');
+				} else {
+					$this->session->data['error_warning'] = $this->language->get('text_invite_student_error');
+				}
 				$url='';
 				if (isset($this->request->get['page'])) {
 					$url .= '&page=' . $this->request->get['page'];
 				}
-				$this->response->redirect($this->url->link('ativocoach/ativocoach','token=' . $this->session->data['token'] . $url, 'SSL'));
+				$this->response->redirect($this->url->link('ativocoach/ativocoach','sid='.$this->request->post['coach_id'].'&token=' . $this->session->data['token'] . $url, 'SSL'));
 			}
 		}
 		public function disableInvite(){
@@ -159,11 +174,11 @@ class ControllerAtivocoachAtivocoach extends Controller {
 					'my_id'			=> $this->customer->getId(),
 					'group_id'		=> $this->customer->getGroupId(),
 					'coach_id'		=> $this->request->get['cid'],
+					'cid_txt'		=> $this->request->get['cid_txt'],
 					'student_id'	=> $this->request->get['sid'],
 					'language_id'	=> (int)$this->config->get('config_language_id')
 					);
 				$returnDisable = $this->model_ativocoach_ativocoach->disableInviteAtivocoach($filter_uid);
-				var_dump($returnDisable);
 				if ($returnDisable) {
 					$this->session->data['success'] = $this->language->get('text_disableInvite_student_success');
 				} else {
@@ -173,7 +188,7 @@ class ControllerAtivocoachAtivocoach extends Controller {
 				if (isset($this->request->get['page'])) {
 					$url .= '&page=' . $this->request->get['page'];
 				}
-				$this->response->redirect($this->url->link('ativocoach/ativocoach','token=' . $this->session->data['token'] . $url, 'SSL'));
+				$this->response->redirect($this->url->link('ativocoach/ativocoach','sid='.$this->request->get['cid_txt'].'&token=' . $this->session->data['token'] . $url, 'SSL'));
 			}
 		}
 }

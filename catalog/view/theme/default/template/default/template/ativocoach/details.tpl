@@ -35,6 +35,13 @@
 				<div class="pull-right"><a href="<?php echo $continue; ?>" class="btn btn-primary"><?php echo $button_continue; ?></a></div>
 			</div>
 		<?php } ?>
+		<?php if (!empty($invitePendingCoachName)) { ?>
+			<p>
+				<label>Você tem pedido pendente do treinador <?php echo $invitePendingCoachName; ?></label>
+				<br />
+				<a href="#">Clique aqui para confirmar</a>
+			</p>
+		<?php } ?>
 		<?php echo $content_bottom; ?>
 	</div>
 	<?php echo $column_right; ?>

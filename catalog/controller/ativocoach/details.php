@@ -37,6 +37,14 @@ class ControllerAtivocoachDetails extends Controller {
 				'student_name'	=> (!empty($result['firstname'])) ? strip_tags(html_entity_decode($result['firstname'], ENT_QUOTES, 'UTF-8')) : strip_tags(html_entity_decode($result['student_name'], ENT_QUOTES, 'UTF-8'))
 				);
 		}
+		$myData = array(
+			'my_id' 	=> $this->customer->getId(),
+			'my_email'	=> $this->customer->getEmail()
+			);
+		$invitePending = $this->model_ativocoach_ativocoach->getInvite($myData);
+		if ($invitePending) {
+			$data['invitePendingCoachName'] = $invitePending['firstname'];
+		}
 
 		$data['continue'] = $this->url->link('common/home');
 		$data['column_left'] = $this->load->controller('common/column_left');
@@ -55,5 +63,8 @@ class ControllerAtivocoachDetails extends Controller {
 		} else {
 			$this->response->setOutput($this->load->view('default/template/ativocoach/details.tpl', $data));
 		}
+	}
+	public function confirmInvite(){
+		
 	}
 }
