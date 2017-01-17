@@ -10,4 +10,6 @@ $_['text_invite_student_success'] = 'Aluno convidado com Sucesso';
 $_['text_invite_student_error'] = 'Erro ao convidar Aluno';
 $_['text_accepted_success'] = 'Aluno aceitou o convite';
 $_['text_accepted_error'] = 'Aluno ainda NÃO aceitou o convite';
+$_['text_accepeted_coach_success'] = 'Convite do Treinador aceito com sucesso';
+$_['text_accepeted_coach_error'] = 'Erro ao aceitar o convite do Treinador, entre em contato com seu treinador ou nossa Central de Ajuda';
 ?>

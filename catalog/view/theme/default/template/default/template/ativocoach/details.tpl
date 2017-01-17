@@ -18,8 +18,16 @@
 	?>
 	<div id="content" class="<?php echo $class; ?>">
 		<?php echo $content_top; ?>
-		<h1><?php echo $heading_title; ?></h1>
-		<h2>Olá <?php echo $client_name; ?></h2>
+		<?php if ($error_warning) { ?>
+		<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i><?php echo $error_warning; ?>
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+		</div>
+		<?php } ?>
+		<?php if ($success) { ?>
+		<div class="alert alert-success"><i class="fa fa-exclamation-circle"></i><?php echo $success; ?>
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+		</div>
+		<?php } ?>
 		<?php foreach ($ativocoachs as $ativocoach) { ?>
 			<div class="col-xs-12">
 				<div class="row">
@@ -35,12 +43,19 @@
 				<div class="pull-right"><a href="<?php echo $continue; ?>" class="btn btn-primary"><?php echo $button_continue; ?></a></div>
 			</div>
 		<?php } ?>
-		<?php if (!empty($invitePendingCoachName)) { ?>
-			<p>
-				<label>Você tem pedido pendente do treinador <?php echo $invitePendingCoachName; ?></label>
-				<br />
-				<a href="#">Clique aqui para confirmar</a>
-			</p>
+		<?php foreach($inviteCoachs as $inviteCoach => $key) { ?>
+			<?php if ($key['url_confirm'] != '') { ?>
+				<p>
+					<label>Você tem pedido pendente do <?php echo $key['firstname']; ?></label>
+					<br />
+					<a href="<?php echo $key['url_confirm']; ?>">Clique aqui para confirmar</a>
+				</p>
+				<hr />
+			<?php } else { ?>
+				<p>
+					<label>Você já é aluno do <?php echo $key['firstname']; ?></label>
+				</p>
+			<?php } ?>
 		<?php } ?>
 		<?php echo $content_bottom; ?>
 	</div>

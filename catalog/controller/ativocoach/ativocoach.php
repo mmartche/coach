@@ -11,7 +11,8 @@ class ControllerAtivocoachAtivocoach extends Controller {
 
 		if ($this->customer->getGroupId() != '3') {
 			if ($this->customer->getGroupId() != '2') {
-				$this->response->redirect($this->url->link('ativocoach/details','token=' . $this->session->data['token'].'&aid=0&sid='.$this->customer->getId() . $url, 'SSL'));
+				$tokenCode = (!empty($this->session->data['token'])) ? $this->session->data['token'] : '';
+				$this->response->redirect($this->url->link('ativocoach/details','token=' . $tokenCode.'&aid=0&sid='.$this->customer->getId(), 'SSL'));
 			} else {
 				// $this->response->redirect($this->url->link('ativocoach/ativocoach','token=' . $this->session->data['token'], 'SSL'));
 			}
@@ -41,7 +42,9 @@ class ControllerAtivocoachAtivocoach extends Controller {
 			'href' => $this->url->link('ativocoach/ativocoach')
 			);
 		$data['ativocoachs'] = array();
-		$limit = $this->config->get('theme_default_product_limit');
+		$limit = '15';
+		// to do : USE THIS FOR OC 2.3.0.1
+		// $limit = $this->config->get('theme_default_product_limit');
 		
 		$this->load->model('ativocoach/ativocoach');
 		$filter_data = array(

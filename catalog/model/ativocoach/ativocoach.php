@@ -30,12 +30,18 @@ class ModelAtivocoachAtivocoach extends Model {
 		return $query->rows;
 	}
 	public function getAtivocoach($data = array()) {
+		//TO DO : checkPermission()
 		if ($data['sid'] != 0) {
 			$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer c WHERE c.customer_id = '".$data['sid']."'");
 			return $query->rows;
 		} elseif ($data['aid'] != 0) {
 			$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "ativocoach c WHERE c.ativocoach_id = '".$data['aid']."'");
 			return $query->rows;
+		} elseif ($data['my_id'] != 0) {
+			$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer c WHERE c.customer_id = '".$data['my_id']."'");
+			return $query->rows;
+		} else {
+			return false;
 		}
 	}
 	public function getTotalAtivocoachs ($data = array()) {
@@ -92,15 +98,42 @@ class ModelAtivocoachAtivocoach extends Model {
 			return false;
 		}
 	}
-	public function getInvite($data = array()){
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "ativocoach a LEFT JOIN " . DB_PREFIX . "customer c ON (a.coach_id = c.customer_id) WHERE a.student_email = '".$data['my_email']."' AND a.student_accepted = '0'");
-		if ($query->rows) {
-			return $query->row;
-		} else {
-			return false;
-		}
+	public function getCoachs($data = array()){
+		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "ativocoach a LEFT JOIN " . DB_PREFIX . "customer c ON (a.coach_id = c.customer_id) WHERE a.student_email = '".$data['my_email']."'");
+		return $query->rows;
 	}
-	public funcion confirmInvite($data = array()) {
-		return true;
+	public function confirmInvite($data = array()) {
+		$query_check = $this->db->query("SELECT * FROM " . DB_PREFIX . "ativocoach WHERE ativocoach_id = '".$data['ativocoach_id']."' and (student_id = '".$data['my_id']."' or student_email = '".$data['email']."') and coach_id = '".$data['coach_id']."'");
+		if ($query_check) {
+			// return("UPDATE " . DB_PREFIX . "ativocoach SET student_accepted = '1' and student_id = '".$data['my_id']."' WHERE ativocoach_id = '".$query_check->row['ativocoach_id']."'");
+			$query_update_invite = $this->db->query("UPDATE " . DB_PREFIX . "ativocoach SET student_accepted = '1', student_id = '".$data['my_id']."' WHERE ativocoach_id = '".$query_check->row['ativocoach_id']."'");
+			// $updateCoachId = $this->db->getLastId();
+			if ($this->db->countAffected() > 0) { return true; }
+			else { return false; }
+		}
+		return false;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
