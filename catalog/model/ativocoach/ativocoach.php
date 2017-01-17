@@ -113,6 +113,14 @@ class ModelAtivocoachAtivocoach extends Model {
 		}
 		return false;
 	}
+	public function getAtivocoachApi($data = array()) {
+		$query = $this->db->query("SELECT * from " . DB_PREFIX . "ativocoach WHERE student_email = '".$data['email']."'");
+		if ($query){
+			return $query->rows;
+		} else {
+			return false;
+		}
+	}
 }
 
 
