@@ -20,10 +20,18 @@ class ControllerAtivocoachApi extends Controller {
 					print_r("<hr />");
 				}
 			} else {
-				print_r("Cliente não encontrado");
+				print_r('{
+					"Success":false,
+					"Message":"Cliente não encontrado",
+					Code: 0
+						}');
 			}
 		} else {
-			print_r("Insira o campo email");
+			print_r('{
+				"Success":false,
+				"Message":"Insira o campo email",
+				Code: 0
+					}');
 		}
 	}
 }

@@ -121,6 +121,17 @@ class ModelAtivocoachAtivocoach extends Model {
 			return false;
 		}
 	}
+	public function sendEmailAtivocoach($data = array()){
+		return true;
+	}
+	public function changeClientData($data = array()){
+		$query = $this->db->query("SELECT * from " . DB_PREFIX . "customer WHERE email = '".$data['email']."'");
+		if ($query){
+			return $query->rows;
+		} else {
+			return false;
+		}
+	}
 }
 
 
