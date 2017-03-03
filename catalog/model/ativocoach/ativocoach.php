@@ -125,12 +125,28 @@ class ModelAtivocoachAtivocoach extends Model {
 		return true;
 	}
 	public function changeClientData($data = array()){
-		$query = $this->db->query("SELECT * from " . DB_PREFIX . "customer WHERE email = '".$data['email']."'");
+		$query = $this->db->query("SELECT * from " . DB_PREFIX . "customer WHERE customer_id = '".$data['customer_id']."'");
 		if ($query){
 			return $query->rows;
 		} else {
 			return false;
 		}
+	}
+	public function getDataToApi($data = array()){
+		$query = $this->db->query("SELECT * from " . DB_PREFIX . "ativocoach_api WHERE return_status_b2b != 'Y' ");
+		if ($query){
+			return $query->rows;
+		} else {
+			return false;
+		}	
+	}
+	public function sendClientEmail($data = array()){
+		$query = $this->db->query("INSERT INTO " . DB_PREFIX . "ativocoach_email ('subject', 'message', 'sender_from', 'sender_name', 'sender_to', 'header', 'parameters') VALUES ('".$data['subject']."', '".$data['message']."', '".$data['sender_from']."', '".$data['sender_name']."', '".$data['sender_to']."', '".$data['header']."', '".$data['parameters']."')");
+		if ($query){
+			return $query->rows;
+		} else {
+			return false;
+		}	
 	}
 }
 

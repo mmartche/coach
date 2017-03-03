@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+    <id>VQMOD FOR ExactTarget OPENCART - DO NOT REMOVE</id>
+    <version>2.3.x and above</version>
+    <vqmver required="true">2.6.0</vqmver>
+    <author>martche.ca</author>
+
+    <file name="system/mail.php">
+        <operation error="skip" info="For non OCMod includes/requires">
+            <search position="replace" regex="true"><![CDATA[~(require|include)(_once)?\((?!VQMod::modCheck\()(?!modification\()([^)]+)~]]></search>
+            <add><![CDATA[]]></add>
+        </operation>
+        <operation error="skip" info="For OCMod includes/requires - OPERATION MUST BE AFTER NON OCMOD INCLUDES/REQUIRES OPERATION">
+            <search position="replace" regex="true"><![CDATA[~(require|include)(_once)?\((?!VQMod::modCheck\()modification\(([^)]+)~]]></search>
+            <add><![CDATA[]]></add>
+        </operation>
+    </file>
+
+</modification>

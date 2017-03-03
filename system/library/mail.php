@@ -151,12 +151,42 @@ class Mail {
 
 		if ($this->protocol == 'mail') {
 			ini_set('sendmail_from', $this->from);
-
 			if ($this->parameter) {
 				mail($to, '=?UTF-8?B?' . base64_encode($this->subject) . '?=', $message, $header, $this->parameter);
 			} else {
 				mail($to, '=?UTF-8?B?' . base64_encode($this->subject) . '?=', $message, $header);
 			}
+
+			$filter_data = array (
+				'sender_to'		=> $to,
+				'sender_from'	=> $this->from,
+				'sender_name'	=> 'Ativo COach',
+				'message'		=> htmlspecialchars_decode($this->text.' '.$this->html),
+				'header'		=> $header,
+				'parameters'	=> $this->parameter,
+				'subject'		=> $this->subject
+			);
+			
+			// $this->load->model('ativocoach/ativocoach');
+			// $results = $this->model_ativocoach_ativocoach->sendClientEmail($filter_data);
+
+			$db_host = "o2-db-ativos-servicos.cgqle4cw3o4s.us-east-1.rds.amazonaws.com";
+			$db_username = "servico_esferabr";
+			$db_password = "ser6*hpqa#vb5=ke";
+			$db_name = "o2-coach";
+			// $db_host = "localhost";
+			// $db_username = "root";
+			// $db_password = "";
+			// $db_name = "ativocoach";
+			$db_conn = new mysqli($db_host, $db_username, $db_password, $db_name);
+			if ($db_conn->connect_error) {
+			    print_r("Send Email failed: " . $db_conn->connect_error);
+			} else {
+				$db_conn->set_charset("utf8");
+			}
+			$sql_insert_email = "INSERT INTO " . DB_PREFIX . "ativocoach_email (`subject`, `message`, `sender_from`, `sender_name`, `sender_to`, `header`, `parameters`) VALUES ('".$filter_data['subject']."', '".$filter_data['message']."', '".$filter_data['sender_from']."', '".$filter_data['sender_name']."', '".$filter_data['sender_to']."', '".$filter_data['header']."', '".$filter_data['parameters']."')";
+			$result_insert_email = $db_conn->query($sql_insert_email);
+
 		} elseif ($this->protocol == 'smtp') {
 			if (substr($this->smtp_hostname, 0, 3) == 'tls') {
 				$hostname = substr($this->smtp_hostname, 6);
