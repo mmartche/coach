@@ -22,7 +22,7 @@ class ModelAtivocoachAtivocoach extends Model {
 	}
 	public function getAtivocoachs($data = array()) {
 		if ($data['my_group'] == 3 && !empty($data['sid'])) {
-			$query = $this->db->query("SELECT b.*, c.* FROM " . DB_PREFIX . "ativocoach a left join " . DB_PREFIX ."ativocoach b on (a.student_id = b.coach_id) left join oc_customer c
+			$query = $this->db->query("SELECT b.*, c.* FROM " . DB_PREFIX . "ativocoach a left join " . DB_PREFIX ."ativocoach b on (a.student_id = b.coach_id) left join " . DB_PREFIX . "customer c
 		on b.student_id = c.customer_id WHERE b.status = '1' and a.coach_id = '".$data['my_id']."' and a.student_id = '".$data['sid']."' ORDER BY a.date_added DESC LIMIT ".(int)$data['start'].",".(int)$data['limit']."");
 		} else {
 			$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "ativocoach f left join " . DB_PREFIX ."customer c on (f.student_id = c.customer_id) WHERE f.status = '1' and f.coach_id = '".$data['my_id']."' ORDER BY f.date_added DESC LIMIT ".(int)$data['start'].",".(int)$data['limit']."");
@@ -122,7 +122,12 @@ class ModelAtivocoachAtivocoach extends Model {
 		}
 	}
 	public function sendEmailAtivocoach($data = array()){
-		return true;
+		$query = $this->db->query("SELECT * from " . DB_PREFIX . "customer WHERE email = '".$data['email']."' ");
+		if ($query->num_rows){
+			return true;
+		} else {
+			return false;
+		}
 	}
 	public function changeClientData($data = array()){
 		$query = $this->db->query("SELECT * from " . DB_PREFIX . "customer WHERE customer_id = '".$data['customer_id']."'");
@@ -138,37 +143,39 @@ class ModelAtivocoachAtivocoach extends Model {
 			return $query->rows;
 		} else {
 			return false;
-		}	
+		}
 	}
 	public function sendClientEmail($data = array()){
-		$query = $this->db->query("INSERT INTO " . DB_PREFIX . "ativocoach_email ('subject', 'message', 'sender_from', 'sender_name', 'sender_to', 'header', 'parameters') VALUES ('".$data['subject']."', '".$data['message']."', '".$data['sender_from']."', '".$data['sender_name']."', '".$data['sender_to']."', '".$data['header']."', '".$data['parameters']."')");
+		$query = $this->db->query("INSERT INTO " . DB_PREFIX . "ativocoach_email (`subject`, `message`, `sender_from`, `sender_name`, `sender_to`, `header`, `parameters`) VALUES ('".$data['subject']."', '".$data['message']."', '".$data['sender_from']."', '".$data['sender_name']."', '".$data['sender_to']."', '".$data['header']."', '".$data['parameters']."')");
 		if ($query){
 			return $query->rows;
 		} else {
 			return false;
 		}	
 	}
+	public function getCustomField($data = array()){
+		$query = $this->db->query("SELECT * from " . DB_PREFIX . "custom_field_description WHERE custom_field_id = '".$data['custom_field_id']."' and language_id = '".$data['language_id']."' ");
+		if ($query){
+			return $query->row;
+		} else {
+			return false;
+		}
+	}
+	public function getCustomerAddress($data = array()){
+		$query = $this->db->query("SELECT *, c.name as estado from " . DB_PREFIX . "address as a left join " . DB_PREFIX . "country as b on a.country_id = b.country_id left join " . DB_PREFIX . "zone as c on a.zone_id = c.zone_id WHERE a.customer_id = '".$data['customer_id']."' ");
+		if ($query){
+			return $query->row;
+		} else {
+			return false;
+		}
+	}
+	public function getCustomerPlano($data = array()) {
+		// return "SELECT e.text as qtdMaximaAlunos, b.name as nomePlano, c.date_added as dataVencimentoPlano FROM oc_order a left join oc_order_product b on a.order_id = b.order_id left join oc_order_history c on a.order_id = c.order_id and c.order_status_id = 5 left join oc_product_attribute e on b.product_id = e.product_id and e.language_id = '".$data['language_id']."' left join oc_attribute_description d on e.attribute_id = d.attribute_id and d.language_id = '".$data['language_id']."' and d.name = 'Quantidade Limitada' where a.order_status_id = 5 and a.customer_id = '".$data['customer_id']."' ";
+		$query = $this->db->query("SELECT e.text as qtdMaximaAlunos, b.name as nomePlano, c.date_added as dataVencimentoPlano FROM oc_order a left join oc_order_product b on a.order_id = b.order_id left join oc_order_history c on a.order_id = c.order_id and c.order_status_id = 5 left join oc_product_attribute e on b.product_id = e.product_id and e.language_id = '".$data['language_id']."' left join oc_attribute_description d on e.attribute_id = d.attribute_id and d.language_id = '".$data['language_id']."' and d.name = 'Quantidade Limitada' where a.order_status_id = 5 and a.customer_id = '".$data['customer_id']."' ");
+		if ($query){
+			return $query->rows;
+		} else {
+			return false;
+		}
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

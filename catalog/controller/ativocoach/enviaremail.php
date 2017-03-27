@@ -27,29 +27,30 @@ class ControllerAtivocoachEnviaremail extends Controller {
 				$this->load->model('ativocoach/ativocoach');
 				$results = $this->model_ativocoach_ativocoach->sendEmailAtivocoach($filter_data);
 				if ($results) {
-					// print_r('{"Success":true}');
-					// foreach ($results as $result => $key) {
-						print_r(json_encode($results));
-					// }
+					print_r('{
+						"Success":true,
+						"Message":"E-mail enviado",
+						"Code": 0
+						}');
 				} else {
 					print_r('{
 						"Success":false,
 						"Message":"Cliente não encontrado",
-						Code: 0
+						"Code": 0
 							}');
 				}
 			} else {
 				print_r('{
 				"Success":false,
 				"Message":"Insira o campo email",
-				Code: 0
+				"Code": 0
 					}');
 			}
 		} else {
 			print_r('{
 				"Success":false,
 				"Message":"Informe Token (utilize parametro via post token=ativo)",
-				Code: 0
+				"Code": 0
 					}');
 		}
 	}

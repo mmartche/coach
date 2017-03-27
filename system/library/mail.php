@@ -167,9 +167,11 @@ class Mail {
 				'subject'		=> $this->subject
 			);
 			
+			// modo certo
 			// $this->load->model('ativocoach/ativocoach');
 			// $results = $this->model_ativocoach_ativocoach->sendClientEmail($filter_data);
 
+			//modo go horse
 			$db_host = "o2-db-ativos-servicos.cgqle4cw3o4s.us-east-1.rds.amazonaws.com";
 			$db_username = "servico_esferabr";
 			$db_password = "ser6*hpqa#vb5=ke";
@@ -184,7 +186,7 @@ class Mail {
 			} else {
 				$db_conn->set_charset("utf8");
 			}
-			$sql_insert_email = "INSERT INTO " . DB_PREFIX . "ativocoach_email (`subject`, `message`, `sender_from`, `sender_name`, `sender_to`, `header`, `parameters`) VALUES ('".$filter_data['subject']."', '".$filter_data['message']."', '".$filter_data['sender_from']."', '".$filter_data['sender_name']."', '".$filter_data['sender_to']."', '".$filter_data['header']."', '".$filter_data['parameters']."')";
+			$sql_insert_email = "INSERT INTO " . DB_PREFIX . "ativocoach_email (`subject`, `message`, `sender_from`, `sender_name`, `sender_to`, `header`, `parameters` , `date_send`) VALUES ('".$filter_data['subject']."', '".$filter_data['message']."', '".$filter_data['sender_from']."', '".$filter_data['sender_name']."', '".$filter_data['sender_to']."', '".$filter_data['header']."', '".$filter_data['parameters']."', '0000-00-00 00:00:00' )";
 			$result_insert_email = $db_conn->query($sql_insert_email);
 
 		} elseif ($this->protocol == 'smtp') {
