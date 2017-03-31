@@ -1,0 +1,16 @@
+BEGIN
+SELECT max(id), max(customer_id) INTO @id_do_cara, @id_cliente FROM oc_ativocoach_api WHERE customer_id = OLD.customer_id AND return_status_b2b = 'n' LIMIT 1;
+
+IF (OLD.date_updated != NEW.date_updated)
+	THEN
+		IF (@id_do_cara > 0)
+			THEN
+				UPDATE oc_ativocoach_api SET id_client = @id_cliente, id_field = @id_do_cara, firstname = NEW.firstname, lastname = NEW.lastname, email = NEW.email, telephone = NEW.telephone, timestamp_update = now(), custom_field = new.custom_field, dirty_password = new.dirty_password, verified = new.verified  where id = @id_do_cara;
+			ELSE
+				INSERT INTO oc_ativocoach_api
+					( customer_id, firstname, lastname, email, telephone, timestamp_add, custom_field, dirty_password, verified, id_client, id_field )
+				VALUES
+					( NEW.customer_id, new.firstname, new.lastname, new.email, new.telephone, now(), new.custom_field, new.dirty_password, new.verified, @id_cliente, @id_do_cara );
+		END IF;
+END IF;
+END

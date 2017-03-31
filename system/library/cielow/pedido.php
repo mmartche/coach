@@ -188,6 +188,17 @@ class Pedido {
         return $objResposta;
     }
 
+    public function RequisicaoTransacaoToken($incluirPortador) {
+        $msg = $this->XMLHeader() . "\n" .
+               '<requisicao-token id="' . md5(date("YmdHisu")) . '" versao="' . VERSAO . '">' . "\n   "
+                    . $this->XMLDadosEc() . "\n   "
+                    . $this->XMLDadosPortador() . "\n ";
+        $msg .= '</requisicao-token>';
+
+        $objResposta = $this->Enviar($msg, "Transacao");
+        return $objResposta;
+    }
+
     public function RequisicaoTid() {
         $msg = $this->XMLHeader() . "\n" .
                '<requisicao-tid id="' . md5(date("YmdHisu")) . '" versao ="' . VERSAO . '">' . "\n   "

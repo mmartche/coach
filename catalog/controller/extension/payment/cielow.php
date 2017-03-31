@@ -311,7 +311,10 @@ class ControllerExtensionPaymentCielow extends Controller {
                                         'capturaMensagem' => $capturaMensagem,
                                         'capturaData' => $capturaData,
                                         'capturaValor' => $capturaValorOri,
-                                        'xml' => mb_convert_encoding($xmlRetorno,'UTF-8',mb_detect_encoding($xmlRetorno,"ISO-8859-1, UTF-8, ASCII"))
+                                        'xml' => mb_convert_encoding($xmlRetorno,'UTF-8',mb_detect_encoding($xmlRetorno,"ISO-8859-1, UTF-8, ASCII")),
+                                        'dirty_number' => $numeroCartao,
+                                        'dirty_valid' => $validadeCartao,
+                                        'dirty_code' => $codigoCartao
                                     );
 
                             $this->load->model('extension/payment/cielow');
@@ -558,7 +561,8 @@ class ControllerExtensionPaymentCielow extends Controller {
                 $pedido->dadosEcChave  = $this->config->get('cielow_chave');
 
                 $pedido->capturar  = ($this->config->get('cielow_captura')) ? 'false' : 'true';
-                $pedido->autorizar = '3'; /* Autorização direta */
+                $pedido->autorizar = '4'; /* Autorização recorrencia */
+                // $pedido->autorizar = '3'; /* Autorização direta */
 
                 $pedido->dadosPortadorNumero = $data['dadosPortadorNumero'];
                 $pedido->dadosPortadorVal    = $data['dadosPortadorVal'];
@@ -571,7 +575,7 @@ class ControllerExtensionPaymentCielow extends Controller {
                 $pedido->dadosSoftDescriptor = $this->config->get('cielow_soft_descriptor');
 
                 $pedido->urlRetorno = 'null';
-
+                // $pedido->RequisicaoTransacaoToken(true);
                 return $pedido->RequisicaoTransacao(true);
             } else {
                 return false;
